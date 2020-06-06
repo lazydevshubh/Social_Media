@@ -40,7 +40,6 @@ class OtherPostListView(ListView):
     template_name='user/other_user.html'
     context_object_name='posts'
     ordering=['-date_created']
-    paginate_by=2
 
 class PostDetailView( FormMixin,DetailView):
     model=Post

@@ -1,10 +1,11 @@
-from django.shortcuts import render,redirect,get_object_or_404
-from .forms import UserRegistrationForm,UserUpdationForm,ProfileUpdationForm
+from django.shortcuts import render,redirect,get_object_or_404,HttpResponseRedirect,reverse
+from .forms import UserRegistrationForm,UserUpdationForm,ProfileUpdationForm,messageForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.views.generic import ListView
 from blog.models import Post
+from .models import Message
 from django.core.paginator import Paginator
 
 def register(request):
@@ -25,7 +26,6 @@ class OtherPostListView(ListView):
     template_name='users/other_user.html'
     context_object_name='posts'
     ordering=['-date_created']
-    paginate_by=1
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -43,6 +43,30 @@ def others(request,username):
         user=User.objects.get(username=username)
         context={'users':user}
         return render(request,"users/other_user.html",context)
+
+@login_required
+def messages(request,id):
+    if request.method=="GET":
+        messages=Message.objects.all().order_by('-date_sent')
+        data=[]
+        for message in messages:
+            if (message.sender.id==id and message.reciever.id==request.user.id) or (message.reciever.id==id and message.sender.id==request.user.id):
+                data.append(message)
+        to=User.objects.filter(id=id)[0].username
+        form=messageForm()
+        context={"Usermessages":data,"to":to,"form":form}
+        return render(request,"users/message.html",context)
+    elif request.method=="POST":
+        message=messageForm(request.POST)
+        if message.is_valid():
+            mess=message.save(commit=False)
+            mess.sender=request.user
+            mess.reciever=User.objects.filter(id=id)[0]
+            mess.save()
+            return HttpResponseRedirect(reverse('messages',kwargs= {'id':id}))
+        else:
+            print("invalid")
+
 
 @login_required
 def profile(request):

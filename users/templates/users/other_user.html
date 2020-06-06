@@ -7,6 +7,9 @@
         <div class="media-body">
           <h2 class="account-heading">{{ users.username }}</h2>
           <p class="text-secondary">{{ users.email }}</p>
+          {% if user != users %}
+          <a class="mr-2" href="{% url 'messages' users.id %}">Message</a>
+          {% endif %}
         </div>
       </div>
     </div>
