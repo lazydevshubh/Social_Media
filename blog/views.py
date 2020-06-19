@@ -1,4 +1,6 @@
 from django.shortcuts import render,HttpResponseRedirect,reverse,redirect
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from .models import Post,Comment
 from .forms import addComment
 from django.contrib.auth.decorators import login_required
@@ -12,19 +14,30 @@ def home(request):
     }
     return render(request, 'blog/home.html', context)
 @login_required
-def PostLike(request,id):
+def PostLike(request):
+    id=request.POST.get('id')
     post=Post.objects.filter(id=id)[0]
     if request.user in post.likes.all():
         post.likes.remove(request.user)
     else:
         post.likes.add(request.user)
+    if request.is_ajax():
+        html = render_to_string('blog/likes.html',{"post":post}, request=request)
+        print("inside")
+        return JsonResponse({'form': html})
     return HttpResponseRedirect(post.get_absolute_url())
 
 @login_required
-def Delete_comment(request,id):
+def Delete_comment(request):
+    id=request.POST.get('id')
+    pid=request.POST.get('pid')
+    post=Post.objects.filter(id=pid)[0]
     print(request.POST)
     Comment.objects.filter(id=id).delete()
     #we need to go to post
+    if request.is_ajax():
+            html = render_to_string('blog/comments.html',{"post":post,"form":addComment}, request=request)
+            return JsonResponse({'form': html})
     return HttpResponseRedirect(reverse('post-details',kwargs= {'pk':int(request.POST['next'])}))
 
 
@@ -51,7 +64,11 @@ class PostDetailView( FormMixin,DetailView):
         self.object = self.get_object()
         form = self.get_form()
         if form.is_valid():
-            return self.form_valid(form)
+            x=self.form_valid(form)
+            if self.request.is_ajax():
+                html = render_to_string('blog/comments.html',{"post":self.object,"form":addComment}, request=request)
+                return JsonResponse({'form': html})
+            return x
         else:
             return self.form_invalid(form)
     def form_valid(self, form):
@@ -60,6 +77,8 @@ class PostDetailView( FormMixin,DetailView):
         post=self.get_object()
         post.comments.add(form.instance)
         return super(PostDetailView, self).form_valid(form)
+
+    
 
 class PostDeleteView(LoginRequiredMixin,UserPassesTestMixin,DeleteView):
     model=Post

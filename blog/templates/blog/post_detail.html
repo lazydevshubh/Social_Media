@@ -16,54 +16,12 @@
             </div>
             <h2 class="article-title">{{ post.title }}</h2>
             <p class="article-content">{{ post.content }}</p>
-            <p>{{ post.likes.count }}
-            {% if user in post.likes.all %}
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-like' object.id %}">Disike</a>
-            {% else %}
-                <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-like' object.id %}">Like</a>
-            {% endif %}
-            </p>
+            <div id="like-section" >
+                {% include 'blog/likes.html' %}
+            </div>
         </div>
     </article>
-    <h4>Comments {{ post.comments.count }}</h4>
-        {% for comment in post.comments.all %}
-            <span>
-                <div class="comments" style="padding: 10px;">
-                    <p class="font-weight-bold">
-                        
-                        <img class="rounded-circle article-img" src="{{ comment.author.profile.image.url }}">
-                        <a class="mr-2" href="{% url 'other-user' comment.author %}">{{ comment.author }}</a>
-                        <span class=" text-muted font-weight-normal">
-                            <small>
-                        {{ comment.date_created }}
-                        </small>
-                        </span>
-                    </p>
-                    <blockquote class="blockquote">
-                        <p class="mb-0 ">{{ comment.content | linebreaks }}</p>
-                    </blockquote>
-                    {% if user == comment.author or user == post.author %}
-                        <form action="{% url 'delete-comment' comment.id %}" method = "POST">
-                            {% csrf_token %}
-                            <input type="hidden" name="next" value={{ object.id }}>
-                            <button  class="btn btn-danger btn-sm" type="submit">Delete</button>
-                        </form>
-                    {% endif %}
-                </div>
-            </span>
-            <hr>
-        {% endfor %}
-
-    <div class="content-section">
-        <form method="POST">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend class="border-bottom mb-4">Leave A Comment</legend>
-                {{ form|crispy }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Post</button>
-            </div>
-        </form>
+    <div id="comment-section" >
+        {% include 'blog/comments.html' %}
     </div>
 {% endblock content %}

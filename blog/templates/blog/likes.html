@@ -1,0 +1,20 @@
+{%comment%}
+<p>{{ post.likes.count }}
+    {% if user in post.likes.all %}
+        <button type="submit" id="like" class="btn btn-secondary btn-sm mt-1 mb-1" value="{{ object.id }}">Dislike</button>
+    {% else %}
+    <button type="submit" id="like" class="btn btn-primary btn-sm mt-1 mb-1" value="{{ object.id }}">Like</button>
+    {% endif %}
+</p>
+{%endcomment%}
+<p>
+    <form action="{% url 'post-like' %}" method="post">
+        {% csrf_token %}
+        {{ post.likes.count }}
+        {% if user in post.likes.all %}
+        <button type="submit" id="like" value="{{ post.id }}" class="btn btn-secondary btn-sm">Dislike</button>
+        {% else %}
+        <button type="submit" id="like" value="{{ post.id }}" class="btn btn-primary btn-sm">Like</button>
+        {% endif %}
+  </form>
+</p>
