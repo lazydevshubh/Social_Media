@@ -45,11 +45,11 @@ def others(request,username):
         return render(request,"users/other_user.html",context)
 
 @login_required
-def messages(request,id):
+def messagesFucn(request,id):
     if request.method=="GET":
-        messages=Message.objects.all().order_by('-date_sent')
+        messagesobj=Message.objects.all().order_by('-date_sent')
         data=[]
-        for message in messages:
+        for message in messagesobj:
             if (message.sender.id==id and message.reciever.id==request.user.id) or (message.reciever.id==id and message.sender.id==request.user.id):
                 data.append(message)
         to=User.objects.filter(id=id)[0].username
@@ -63,7 +63,7 @@ def messages(request,id):
             mess.sender=request.user
             mess.reciever=User.objects.filter(id=id)[0]
             mess.save()
-            return HttpResponseRedirect(reverse('messages',kwargs= {'id':id}))
+            return HttpResponseRedirect(reverse('messagesFucn',kwargs= {'id':id}))
         else:
             print("invalid")
 
