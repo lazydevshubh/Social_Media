@@ -63,7 +63,7 @@ def messagesFucn(request,id):
             mess.sender=request.user
             mess.reciever=User.objects.filter(id=id)[0]
             mess.save()
-            return HttpResponseRedirect(reverse('messagesFucn',kwargs= {'id':id}))
+            return HttpResponseRedirect(reverse('messages',kwargs= {'id':id}))
         else:
             print("invalid")
 
