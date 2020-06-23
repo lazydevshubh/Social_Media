@@ -12,9 +12,17 @@
         {% csrf_token %}
         {{ post.likes.count }}
         {% if user in post.likes.all %}
-        <button type="submit" id="like" value="{{ post.id }}" class="btn btn-secondary btn-sm">Dislike</button>
+            {% if user.is_authenticated %}
+                <button type="submit" id="like" value="{{ post.id }}" class="btn btn-secondary btn-sm">Dislike</button>
+            {% else %}
+                <button type="submit" id="like" value="{{ post.id }}" class="btn btn-disabled btn-sm">Dislike</button>
+            {% endif %}
         {% else %}
-        <button type="submit" id="like" value="{{ post.id }}" class="btn btn-primary btn-sm">Like</button>
+            {% if user.is_authenticated %}
+                <button type="submit" id="like" value="{{ post.id }}" class="btn btn-primary btn-sm">Like</button>
+            {% else %}
+                <button type="submit" id="like" value="{{ post.id }}" class="btn btn-disabled btn-sm">Like</button>
+            {% endif %}
         {% endif %}
   </form>
 </p>
