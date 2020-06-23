@@ -26,7 +26,7 @@ SECRET_KEY = 'an2er7v61nun*(!lk#y80onm*n!#5wg6rml*hc&(mhbo3x!x_='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['meetandtalk.herokuapp.com']
 
 
 # Application definition
@@ -123,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT=os.path.join(BASE_DIR,'staticfiles')
 CRISPY_TEMPLATE_PACK="bootstrap4"
 LOGIN_REDIRECT_URL="blog-home"
 LOGIN_URL="login"
